@@ -283,6 +283,7 @@ namespace CSprac1
             Console.WriteLine(col.ToLongString("F2"));
             Console.WriteLine(col.ToLongString("F2"));
             Console.WriteLine(col.ToLongString("F2"));
+            Console.WriteLine(col.ToLongString("F2"));
         }
     }
 }
