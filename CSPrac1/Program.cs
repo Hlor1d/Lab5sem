@@ -282,7 +282,6 @@ namespace CSprac1
             col.Add(lst2);
             Console.WriteLine(col.ToLongString("F2"));
             Console.ReadLine();
-            Console.ReadLine();
         }
     }
 }
