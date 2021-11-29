@@ -27,7 +27,7 @@ namespace CSprac1
 
     }
 
-    abstract class V2Data
+    abstract class V2Data : IEnumerable<DataItem>
     {
         public string str { get; set; }
         public DateTime mydate { get; set; }
@@ -258,6 +258,12 @@ namespace CSprac1
             return c;
         }
     }
+
+    interface IEnumerable<DataItem>
+    {
+        string ToLongString(string format);
+    }
+
     class Program
     {
         static void Main(string[] args)
