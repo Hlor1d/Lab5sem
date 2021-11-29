@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,6 +32,11 @@ namespace CSprac1
     {
         public string str { get; set; }
         public DateTime mydate { get; set; }
+        public abstract IEnumerator<DataItem> GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
         public V2Data(string a, DateTime b)
         {
             this.mydate = b;
@@ -244,7 +250,18 @@ namespace CSprac1
             }
             return mys;
         }
-    }
+        public float MaxDistance
+        {
+            get
+            {
+                var a = from d in MAS
+                          select d;
+                var b = from d in a
+                          select d;
+                return 3;
+            }
+        }
+}
     static class Forfunc
     {
         public static Complex myfunc1(Vector2 v)
@@ -257,11 +274,6 @@ namespace CSprac1
             Complex c = new Complex(v.X * v.X, v.Y + 10);
             return c;
         }
-    }
-
-    interface IEnumerable<DataItem>
-    {
-        string ToLongString(string format);
     }
 
     class Program
