@@ -166,8 +166,60 @@ namespace CSprac1
         }
     }
 
+    class V2DataArrayEnumerator : IEnumerator<DataItem>
+    {
+        List<DataItem> Mas = new List<DataItem>();
+        int curIndex;
+        DataItem curdat;
+        public V2DataArrayEnumerator(int ox1, int oy1, Vector2 step1, Fv2Complex F)
+        {
+            for (int i = 0; i < ox1; i++)
+            {
+                for (int j = 0; i < oy1; j++)
+                {
+                    Vector2 vecc = new Vector2(step1.X * i, step1.Y * j);
+                    DataItem datt = new DataItem(vecc, F(vecc));
+                    Mas.Add(datt);
+                }
+            }
+            curIndex = -1;
+            curdat = default(DataItem);
+        }
+        public bool MoveNext()
+        {
+            if (++curIndex >= Mas.Count)
+            {
+                return false;
+            }
+            else
+            {
+                curdat = Mas[curIndex];
+            }
+            return true;
+        }
+
+        public void Reset() { curIndex = -1; }
+
+        void IDisposable.Dispose() { }
+
+        public DataItem Current
+        {
+            get { return curdat; }
+        }
+
+        object IEnumerator.Current
+        {
+            get { return Current; }
+        }
+    }
+    
     class V2DataArray : V2Data
     {
+        public override IEnumerator<DataItem> GetEnumerator()
+        {
+            return new V2DataArrayEnumerator(ox,oy,step,F);
+        }
+        Fv2Complex F;
         public int ox { get; set; }
         public int oy { get; set; }
         public Vector2 step { get; set; }
@@ -178,8 +230,9 @@ namespace CSprac1
             this.str = a1;
             this.val = new Complex[0, 0];
         }
-        public V2DataArray(string a1, DateTime b1, int ox1, int oy1, Vector2 step1, Fv2Complex F) : base(a1, b1)
+        public V2DataArray(string a1, DateTime b1, int ox1, int oy1, Vector2 step1, Fv2Complex F1) : base(a1, b1)
         {
+            F = F1;
             this.mydate = b1;
             this.str = a1;
             ox = ox1;
