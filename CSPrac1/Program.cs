@@ -8,7 +8,7 @@ using System.Numerics;
 
 namespace CSprac1
 {
-    struct DataItem
+     struct DataItem
     {
         public Vector2 vec { get; set; }
         public Complex val { get; set; }
@@ -54,8 +54,52 @@ namespace CSprac1
 
     delegate Complex Fv2Complex(Vector2 v2);
 
+    class V2DataListEnumerator : IEnumerator<DataItem>
+    {
+        List<DataItem> Mas = new List<DataItem>();
+        int curIndex;
+        DataItem curdat;
+        public V2DataListEnumerator(List<DataItem> Mas1)
+        {
+            Mas = Mas1;
+            curIndex = -1;
+            curdat = default(DataItem);
+        }
+
+        public bool MoveNext()
+        {
+            if (++curIndex >= Mas.Count)
+            {
+                return false;
+            }
+            else
+            {
+                curdat = Mas[curIndex];
+            }
+            return true;
+        }
+
+        public void Reset() { curIndex = -1; }
+
+        void IDisposable.Dispose() { }
+
+        public DataItem Current
+        {
+            get { return curdat; }
+        }
+
+        object IEnumerator.Current
+        {
+            get { return Current; }
+        }
+    }
+
     class V2DataList : V2Data
     {
+        public override IEnumerator<DataItem> GetEnumerator()
+        {
+            return new V2DataListEnumerator(MAS);
+        }
         List<DataItem> MAS = new List<DataItem>();
         public List<DataItem> mygget { get; }
         public V2DataList(string a1, DateTime b1) : base(a1, b1)
