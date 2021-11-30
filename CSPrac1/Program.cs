@@ -351,10 +351,16 @@ namespace CSprac1
         {
             get
             {
-                var a = from d in MAS
-                          select d;
-                var b = from d in a
-                          select d;
+                var a = from s in MAS
+                        select s.Zip(s, (a, b) => Vector2.Distance(a.vec,b.vec)).Max();
+                //float b = a.Single();
+                //Console.WriteLine(a.ToString());
+                foreach (float f in a)
+                {
+                    Console.WriteLine(f.ToString());
+                }
+                   // Console.WriteLine("123");
+
                 return 3;
             }
         }
@@ -396,7 +402,8 @@ namespace CSprac1
             col.Add(arr2);
             col.Add(lst2);
             Console.WriteLine(col.ToLongString("F2"));
-            Console.WriteLine(col.ToLongString("F2"));
+            Console.WriteLine("____________________________");
+            float a=col.MaxDistance;
         }
     }
 }
