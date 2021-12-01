@@ -175,7 +175,7 @@ namespace CSprac1
         {
             for (int i = 0; i < ox1; i++)
             {
-                for (int j = 0; i < oy1; j++)
+                for (int j = 0; j < oy1; j++)
                 {
                     Vector2 vecc = new Vector2(step1.X * i, step1.Y * j);
                     DataItem datt = new DataItem(vecc, F(vecc));
@@ -215,15 +215,15 @@ namespace CSprac1
     
     class V2DataArray : V2Data
     {
-        public override IEnumerator<DataItem> GetEnumerator()
-        {
-            return new V2DataArrayEnumerator(ox,oy,step,F);
-        }
         Fv2Complex F;
         public int ox { get; set; }
         public int oy { get; set; }
         public Vector2 step { get; set; }
         public Complex[,] val { get; set; }
+        public override IEnumerator<DataItem> GetEnumerator()
+        {
+            return new V2DataArrayEnumerator(ox, oy, step, F);
+        }
         public V2DataArray(string a1, DateTime b1) : base(a1, b1)
         {
             this.mydate = b1;
@@ -296,9 +296,56 @@ namespace CSprac1
             return rez;
         }
     }
-
-    class V2MainCollection
+    class V2MainCollectionEnumerator : IEnumerator<V2Data>
     {
+        List<V2Data> Mas = new List<V2Data>();
+        int curIndex;
+        V2Data curdat;
+        public V2MainCollectionEnumerator(List<V2Data> Mas1)
+        {
+            this.Mas = Mas1;
+            this.curIndex = -1;
+            this.curdat = default(V2Data);
+        }
+
+        public bool MoveNext()
+        {
+            if (++curIndex >= Mas.Count)
+            {
+                return false;
+            }
+            else
+            {
+                curdat = Mas[curIndex];
+            }
+            return true;
+        }
+
+        public void Reset() { curIndex = -1; }
+
+        public V2Data Current
+        {
+            get { return curdat; }
+        }
+
+        void IDisposable.Dispose() { }
+
+        object IEnumerator.Current
+        {
+            get { return Current; }
+        }
+    }
+
+    class V2MainCollection : IEnumerable<V2Data>
+    {
+        public  IEnumerator<V2Data> GetEnumerator()
+        {
+            return new V2MainCollectionEnumerator(MAS);
+        }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
         List<V2Data> MAS = new List<V2Data>();
         public int Count
         {
@@ -352,14 +399,17 @@ namespace CSprac1
             get
             {
                 var a = from s in MAS
-                        select s.Zip(s, (a, b) => Vector2.Distance(a.vec,b.vec)).Max();
+                        //from ss in s
+                        select s;
+                //select s.Zip(s, (a, b) => Vector2.Distance(a.vec,b.vec)).Max();
                 //float b = a.Single();
                 //Console.WriteLine(a.ToString());
-                foreach (float f in a)
-                {
-                    Console.WriteLine(f.ToString());
-                }
-                   // Console.WriteLine("123");
+                Console.WriteLine("123");
+                //foreach (DataItem f in a)
+                //{
+               //     Console.WriteLine(f.val.ToString());
+               // }
+                  
 
                 return 3;
             }
@@ -403,7 +453,13 @@ namespace CSprac1
             col.Add(lst2);
             Console.WriteLine(col.ToLongString("F2"));
             Console.WriteLine("____________________________");
-            float a=col.MaxDistance;
+            //float a=col.MaxDistance;
+            var a = from s in col
+                    select s;
+            //foreach (Complex s in a)
+         //   {
+          //      Console.WriteLine(s.Real.ToString());
+        //    }
         }
     }
 }
