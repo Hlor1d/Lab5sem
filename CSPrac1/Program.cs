@@ -93,7 +93,7 @@ namespace CSprac1
         }
     }
 
-    class V2DataList : V2Data
+    class   V2DataList : V2Data
     {
         public override IEnumerator<DataItem> GetEnumerator()
         {
@@ -162,6 +162,66 @@ namespace CSprac1
                 mys += "\n" + MAS[i].vec + " " + MAS[i].val + " " + MAS[i].val.Magnitude.ToString(format);
             }
             return mys;
+        }
+
+        bool SaveAsText(string filename)
+        {
+            bool mybl = true;
+            try
+            {
+                using (StreamWriter sw = new StreamWriter(filename, true, System.Text.Encoding.Default))
+                {
+                    sw.WriteLine(MAS.Count);
+                    for (int i = 0; i < MAS.Count;i++)
+                    {
+                        sw.WriteLine(MAS[i].val.Real);
+                        sw.WriteLine(MAS[i].val.Imaginary);
+                        sw.WriteLine(MAS[i].vec.X);
+                        sw.WriteLine(MAS[i].vec.Y);
+                    }
+                }
+            }
+            catch
+            {
+                mybl = false;
+            }
+            return mybl;
+        }
+        
+        bool LoadAsText(string filename)
+        {
+            bool mybl = true;
+            try
+            {
+                using (StreamReader sr = new StreamReader(filename, System.Text.Encoding.Default))
+                {
+                    string line;
+                    line = sr.ReadLine();
+                    var cnt = Int32.Parse(line);
+                    List<DataItem> MAS = new List<DataItem>();
+                    for (int i = 0; i < cnt; i++)
+                    {
+                        line = sr.ReadLine();
+                        var vr = float.Parse(line);
+                        line = sr.ReadLine();
+                        var vi = float.Parse(line);
+                        line = sr.ReadLine();
+                        var vx = float.Parse(line);
+                        line = sr.ReadLine();
+                        var vy = float.Parse(line);
+                        var compl = new Complex(vr, vi);
+                        var vecccc = new Vector2(vx, vy);
+                        var dtitem = new DataItem(vecccc, compl);
+                        MAS.Add(dtitem);
+                    }
+
+                }
+            }
+            catch
+            {
+                mybl = false;
+            }
+            return mybl;
         }
     }
 
