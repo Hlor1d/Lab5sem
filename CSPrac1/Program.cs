@@ -398,28 +398,46 @@ namespace CSprac1
         {
             get
             {
-                var a = from s in MAS
-                        //from ss in s
-                        select s;
-                //select s.Zip(s, (a, b) => Vector2.Distance(a.vec,b.vec)).Max();
-                //float b = a.Single();
-                //Console.WriteLine(a.ToString());
-                Console.WriteLine("123");
-                //foreach (DataItem f in a)
-                //{
-               //     Console.WriteLine(f.val.ToString());
-               // }
-                  
-
-                return 3;
+                float maxxx = float.NaN;
+                var comb = from s in MAS
+                        from s1 in s
+                           from s2 in s
+                           select new {p1=s1,p2=s2};
+                maxxx = (from s in comb select Vector2.Distance(s.p1.vec, s.p2.vec)).Max();
+                return maxxx;
             }
         }
-}
+
+        public IEnumerable<Vector2> uniq
+        {
+            get
+            {
+                IEnumerable < Vector2 > comb = null;
+                comb = (from s in MAS
+                            from s1 in s
+                            select s1.vec).Distinct();
+                return comb;
+            }
+        }
+
+        public IEnumerable<V2DataList> wthzero
+        {
+            get
+            {
+                Console.WriteLine("________________________");
+                var comb1 = from s in MAS.OfType<V2DataList>()
+                            where (!(from s1 in s select s1.val.Imaginary).Contains(0))
+                            select s;
+                return comb1;
+            }
+        }
+    }
+
     static class Forfunc
     {
         public static Complex myfunc1(Vector2 v)
         {
-            Complex c = new Complex(v.X, v.Y);
+            Complex c = new Complex(v.X, v.Y+100);
             return c;
         }
         public static Complex myfunc2(Vector2 v)
@@ -449,17 +467,13 @@ namespace CSprac1
             Vector2 v1 = new Vector2(1, 2);
             V2DataArray arr2 = new V2DataArray("ID02", date1, 2, 2, v1, F1);
             V2DataList lst2 = (V2DataList)arr2;
-            col.Add(arr2);
             col.Add(lst2);
+            col.Add(arr2);
             Console.WriteLine(col.ToLongString("F2"));
             Console.WriteLine("____________________________");
-            //float a=col.MaxDistance;
-            var a = from s in col
-                    select s;
-            //foreach (Complex s in a)
-         //   {
-          //      Console.WriteLine(s.Real.ToString());
-        //    }
+            float a=col.MaxDistance;
+            IEnumerable<Vector2> a1  = col.uniq;
+            var a2 = col.wthzero;
         }
     }
 }
