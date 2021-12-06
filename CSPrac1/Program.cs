@@ -164,7 +164,7 @@ namespace CSprac1
             return mys;
         }
 
-        bool SaveAsText(string filename)
+        public bool SaveAsText(string filename)
         {
             bool mybl = true;
             try
@@ -187,8 +187,8 @@ namespace CSprac1
             }
             return mybl;
         }
-        
-        bool LoadAsText(string filename)
+
+        public bool LoadAsText(string filename)
         {
             bool mybl = true;
             try
@@ -354,7 +354,7 @@ namespace CSprac1
             }
             return rez;
         }
-        bool SaveBinary (string filename)
+        public bool SaveBinary (string filename)
         {
             bool mybl = true;
             try
@@ -381,7 +381,7 @@ namespace CSprac1
             }
             return mybl;
         }
-        bool LoadBinary(string filename, ref V2DataArray v2)
+        public bool LoadBinary(string filename)
         {
             bool mybl = true;
             try
@@ -553,7 +553,7 @@ namespace CSprac1
     {
         public static Complex myfunc1(Vector2 v)
         {
-            Complex c = new Complex(v.X, v.Y + 100);
+            Complex c = new Complex(v.X, v.Y);
             return c;
         }
         public static Complex myfunc2(Vector2 v)
@@ -565,7 +565,7 @@ namespace CSprac1
 
     class Program
     {
-        static void Main(string[] args)
+        void test0()
         {
             DateTime date1 = DateTime.Now;
             Fv2Complex F = Forfunc.myfunc1;
@@ -590,6 +590,35 @@ namespace CSprac1
             float a = col.MaxDistance;
             IEnumerable<Vector2> a1 = col.uniq;
             var a2 = col.wthzero;
+        }
+
+        void test1()
+        {
+            DateTime date1 = DateTime.Now;
+            Fv2Complex F = Forfunc.myfunc1;
+            Vector2 v = new Vector2(1, 1);
+
+            V2DataArray arr1 = new V2DataArray("ID01", date1, 3, 3, v, F);
+            arr1.SaveBinary(@"C:\ctest\arr1.dat");
+            V2DataArray arr2 = new V2DataArray("ID01", date1);
+            arr2.LoadBinary(@"C:\ctest\arr1.dat");
+
+            Console.WriteLine(arr1.ToLongString("F2"));
+            Console.WriteLine(arr2.ToLongString("F2"));
+
+
+            V2DataList lst1 = (V2DataList)arr1;
+            lst1.SaveAsText(@"C:\ctest\lst1.txt");
+            V2DataList lst2 = new V2DataList("ID01", date1);
+            lst2.LoadAsText(@"C:\ctest\lst1.txt");
+
+            Console.WriteLine(lst1.ToLongString("F2"));
+            Console.WriteLine(lst1.ToLongString("F2"));
+
+        }
+        static void Main(string[] args)
+        {
+            
         }
     }
 }
