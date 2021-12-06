@@ -171,6 +171,7 @@ namespace CSprac1
             {
                 using (StreamWriter sw = new StreamWriter(filename, true, System.Text.Encoding.Default))
                 {
+
                     sw.WriteLine(MAS.Count);
                     for (int i = 0; i < MAS.Count;i++)
                     {
@@ -366,7 +367,7 @@ namespace CSprac1
                     writer.Write(step.Y);
                     for (int i = 0; i < ox; i++)
                     {
-                        for (int j = 0; i < oy; j++)
+                        for (int j = 0; j < oy; j++)
                         {
                             writer.Write(val[i, j].Real);
                             writer.Write(val[i, j].Imaginary);
@@ -395,10 +396,10 @@ namespace CSprac1
                     val = new Complex[ox,oy];
                     for (int i = 0; i < ox; i++)
                     {
-                        for (int j = 0; i < oy; j++)
+                        for (int j = 0; j < oy; j++)
                         {
-                            float myyx= reader.ReadSingle();
-                            float myyy = reader.ReadSingle();
+                            Double myyx= reader.ReadDouble();
+                            Double myyy = reader.ReadDouble();
                             val[i, j] = new Complex(myyx, myyy);
                         }
                     }
@@ -556,7 +557,7 @@ namespace CSprac1
         }
         public static Complex myfunc2(Vector2 v)
         {
-            Complex c = new Complex(v.X * v.X, v.Y + 10);
+            Complex c = new Complex(v.X * v.X, v.Y);
             return c;
         }
         public static Complex myfunc3(Vector2 v)
@@ -601,7 +602,7 @@ namespace CSprac1
             Fv2Complex F = Forfunc.myfunc1;
             Vector2 v = new Vector2(1, 1);
 
-            V2DataArray arr1 = new V2DataArray("ID01", date1, 3, 3, v, F);
+            V2DataArray arr1 = new V2DataArray("ID01", date1, 3, 2, v, F);
             arr1.SaveBinary(@"C:\ctest\arr1.dat");
             V2DataArray arr2 = new V2DataArray("ID01", date1);
             arr2.LoadBinary(@"C:\ctest\arr1.dat");
@@ -632,24 +633,44 @@ namespace CSprac1
             Fv2Complex F1 = Forfunc.myfunc2;
             Vector2 v1 = new Vector2(1, 2);
             V2DataArray arr2 = new V2DataArray("ID02", date1, 3, 3, v1, F1);
-            col.Add(arr2);
+            V2DataList lst2 = (V2DataList)arr2;
+            col.Add(lst2);
 
             Fv2Complex F2 = Forfunc.myfunc3;
-            V2DataArray arr3 = new V2DataArray("ID02", date1, 4, 4, v, F2);
+            V2DataArray arr3 = new V2DataArray("ID03", date1, 4, 4, v, F2);
             V2DataList lst3 = (V2DataList)arr3;
             col.Add(lst3);
 
 
+            V2DataArray arr4 = new V2DataArray("ID04", date1);
+            col.Add(arr4);
+
+            V2DataArray arr5 = new V2DataArray("ID05", date1);
+            V2DataList lst5 = (V2DataList)arr5;
+            col.Add(lst5);
+
             Console.WriteLine(col.ToLongString("F2"));
 
-            float a = col.MaxDistance;
-            IEnumerable<Vector2> a1 = col.uniq;
-            var a2 = col.wthzero;
+            float a1 = col.MaxDistance;
+            IEnumerable<Vector2> a2 = col.uniq;
+            var a3 = col.wthzero;
+            Console.WriteLine("Максимальное расстояние между точками измерений " + a1
+               + " (в данном случаее между 0 0 и 2 4)");
+            Console.WriteLine("Уникальные точки измерений");
+            foreach (var v2 in a2)
+            {
+                Console.WriteLine(v2.ToString());
+            }
+            Console.WriteLine("Id V2DataList не имеющих мнимого нуля в измерениях");
+            foreach (var ld in a3)
+            {
+                Console.WriteLine(ld.str);
+            }
         }
         static void Main(string[] args)
         {
             test1();
-            Console.WriteLine("__________________________");
+            Console.WriteLine("____________________________________________________");
             test2();
         }
     }
