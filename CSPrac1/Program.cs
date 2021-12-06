@@ -2,13 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Numerics;
+using System.IO;
 
 namespace CSprac1
 {
-     struct DataItem
+    struct DataItem
     {
         public Vector2 vec { get; set; }
         public Complex val { get; set; }
@@ -30,8 +29,8 @@ namespace CSprac1
 
     abstract class V2Data : IEnumerable<DataItem>
     {
-        public string str { get; set; }
-        public DateTime mydate { get; set; }
+        public string str { get;protected set; }
+        public DateTime mydate { get; protected set; }
         public abstract IEnumerator<DataItem> GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -212,14 +211,14 @@ namespace CSprac1
             get { return Current; }
         }
     }
-    
+
     class V2DataArray : V2Data
     {
         Fv2Complex F;
-        public int ox { get; set; }
-        public int oy { get; set; }
-        public Vector2 step { get; set; }
-        public Complex[,] val { get; set; }
+        public int ox { get;private set; }
+        public int oy { get; private set; }
+        public Vector2 step { get; private set; }
+        public Complex[,] val { get; private set; }
         public override IEnumerator<DataItem> GetEnumerator()
         {
             return new V2DataArrayEnumerator(ox, oy, step, F);
@@ -295,6 +294,63 @@ namespace CSprac1
             }
             return rez;
         }
+        bool SaveBinary (string filename)
+        {
+            bool mybl = true;
+            try
+            {
+                using (BinaryWriter writer = new BinaryWriter(File.Open(filename, FileMode.OpenOrCreate)))
+                {
+                    writer.Write(ox);
+                    writer.Write(oy);
+                    writer.Write(step.X);
+                    writer.Write(step.Y);
+                    for (int i = 0; i < ox; i++)
+                    {
+                        for (int j = 0; i < oy; j++)
+                        {
+                            writer.Write(val[i, j].Real);
+                            writer.Write(val[i, j].Imaginary);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                mybl = false;
+            }
+            return mybl;
+        }
+        bool LoadBinary(string filename, ref V2DataArray v2)
+        {
+            bool mybl = true;
+            try
+            {
+                using (BinaryReader reader = new BinaryReader(File.Open(filename, FileMode.Open)))
+                {
+                    ox = reader.ReadInt32();
+                    oy = reader.ReadInt32();
+                    float myx = reader.ReadSingle();
+                    float myy = reader.ReadSingle();
+                    step = new Vector2(myx, myy);
+                    val = new Complex[ox,oy];
+                    for (int i = 0; i < ox; i++)
+                    {
+                        for (int j = 0; i < oy; j++)
+                        {
+                            float myyx= reader.ReadSingle();
+                            float myyy = reader.ReadSingle();
+                            val[i, j] = new Complex(myyx, myyy);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                mybl = false;
+            }
+            return mybl;
+        }
     }
     class V2MainCollectionEnumerator : IEnumerator<V2Data>
     {
@@ -338,7 +394,7 @@ namespace CSprac1
 
     class V2MainCollection : IEnumerable<V2Data>
     {
-        public  IEnumerator<V2Data> GetEnumerator()
+        public IEnumerator<V2Data> GetEnumerator()
         {
             return new V2MainCollectionEnumerator(MAS);
         }
@@ -400,9 +456,9 @@ namespace CSprac1
             {
                 float maxxx = float.NaN;
                 var comb = from s in MAS
-                        from s1 in s
+                           from s1 in s
                            from s2 in s
-                           select new {p1=s1,p2=s2};
+                           select new { p1 = s1, p2 = s2 };
                 maxxx = (from s in comb select Vector2.Distance(s.p1.vec, s.p2.vec)).Max();
                 return maxxx;
             }
@@ -412,10 +468,10 @@ namespace CSprac1
         {
             get
             {
-                IEnumerable < Vector2 > comb = null;
+                IEnumerable<Vector2> comb = null;
                 comb = (from s in MAS
-                            from s1 in s
-                            select s1.vec).Distinct();
+                        from s1 in s
+                        select s1.vec).Distinct();
                 return comb;
             }
         }
@@ -437,7 +493,7 @@ namespace CSprac1
     {
         public static Complex myfunc1(Vector2 v)
         {
-            Complex c = new Complex(v.X, v.Y+100);
+            Complex c = new Complex(v.X, v.Y + 100);
             return c;
         }
         public static Complex myfunc2(Vector2 v)
@@ -471,8 +527,8 @@ namespace CSprac1
             col.Add(arr2);
             Console.WriteLine(col.ToLongString("F2"));
             Console.WriteLine("____________________________");
-            float a=col.MaxDistance;
-            IEnumerable<Vector2> a1  = col.uniq;
+            float a = col.MaxDistance;
+            IEnumerable<Vector2> a1 = col.uniq;
             var a2 = col.wthzero;
         }
     }
