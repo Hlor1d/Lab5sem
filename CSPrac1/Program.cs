@@ -329,7 +329,6 @@ namespace CSprac1
         public override string ToLongString(string format)
         {
             string mys = this.GetType() + " " + this.mydate + " " + this.str + " " + this.ox + " " + this.oy + " " + this.step + "\n";
-            Console.WriteLine(ox);
             for (int i = 0; i < this.ox; i++)
             {
                 for (int j = 0; j < this.oy; j++)
@@ -540,7 +539,6 @@ namespace CSprac1
         {
             get
             {
-                Console.WriteLine("________________________");
                 var comb1 = from s in MAS.OfType<V2DataList>()
                             where (!(from s1 in s select s1.val.Imaginary).Contains(0))
                             select s;
@@ -561,11 +559,16 @@ namespace CSprac1
             Complex c = new Complex(v.X * v.X, v.Y + 10);
             return c;
         }
+        public static Complex myfunc3(Vector2 v)
+        {
+            Complex c = new Complex(v.X+10, v.Y+10);
+            return c;
+        }
     }
 
     class Program
     {
-        void test0()
+        static void test0()
         {
             DateTime date1 = DateTime.Now;
             Fv2Complex F = Forfunc.myfunc1;
@@ -592,7 +595,7 @@ namespace CSprac1
             var a2 = col.wthzero;
         }
 
-        void test1()
+        static void test1()
         {
             DateTime date1 = DateTime.Now;
             Fv2Complex F = Forfunc.myfunc1;
@@ -616,9 +619,38 @@ namespace CSprac1
             Console.WriteLine(lst1.ToLongString("F2"));
 
         }
+
+        static void test2()
+        {
+            DateTime date1 = DateTime.Now;
+            Fv2Complex F = Forfunc.myfunc1;
+            Vector2 v = new Vector2(1, 1);
+            V2DataArray arr1 = new V2DataArray("ID01", date1, 4, 4, v, F);
+            V2MainCollection col = new V2MainCollection();
+            col.Add(arr1);
+
+            Fv2Complex F1 = Forfunc.myfunc2;
+            Vector2 v1 = new Vector2(1, 2);
+            V2DataArray arr2 = new V2DataArray("ID02", date1, 3, 3, v1, F1);
+            col.Add(arr2);
+
+            Fv2Complex F2 = Forfunc.myfunc3;
+            V2DataArray arr3 = new V2DataArray("ID02", date1, 4, 4, v, F2);
+            V2DataList lst3 = (V2DataList)arr3;
+            col.Add(lst3);
+
+
+            Console.WriteLine(col.ToLongString("F2"));
+
+            float a = col.MaxDistance;
+            IEnumerable<Vector2> a1 = col.uniq;
+            var a2 = col.wthzero;
+        }
         static void Main(string[] args)
         {
-            
+            test1();
+            Console.WriteLine("__________________________");
+            test2();
         }
     }
 }
