@@ -528,11 +528,22 @@ namespace CSprac1
         {
             get
             {
-                IEnumerable<Vector2> comb = null;
-                comb = (from s in MAS
-                        from s1 in s
-                        select s1.vec).Distinct();
-                return comb;
+                int j = 0;
+                var all1 = (from s in MAS
+                           from s1 in s
+                           select new { vec123 = s1.vec , lng123 = s1.vec.Length()});
+                var all2 = (from s in all1
+                            orderby s.vec123.X
+                            orderby s.lng123
+                           select new {Index=j++,Value=s}).ToList();
+                int count = all2.Count;
+                var all3=all2.Where(x => (x.Index==0 && x.Value.vec123 != all2[x.Index + 1].Value.vec123)
+                || (x.Index == count - 1 && x.Value.vec123 != all2[x.Index - 1].Value.vec123)
+                || (x.Index != count - 1 && x.Index != 0 
+                && x.Value.vec123 != all2[x.Index + 1].Value.vec123 && x.Value.vec123 != all2[x.Index - 1].Value.vec123));
+                var rez = from s in all3
+                          select s.Value.vec123;
+                return rez;
             }
         }
 
@@ -569,7 +580,7 @@ namespace CSprac1
 
     class Program
     {
-        static void test0()
+        static void test0()//Из первой Практ работы
         {
             DateTime date1 = DateTime.Now;
             Fv2Complex F = Forfunc.myfunc1;
@@ -596,25 +607,25 @@ namespace CSprac1
             var a2 = col.wthzero;
         }
 
-        static void test1()
+        static void test1(string filename1, string filename2)
         {
             DateTime date1 = DateTime.Now;
             Fv2Complex F = Forfunc.myfunc1;
             Vector2 v = new Vector2(1, 1);
 
             V2DataArray arr1 = new V2DataArray("ID01", date1, 3, 2, v, F);
-            arr1.SaveBinary(@"C:\ctest\arr1.dat");
+            arr1.SaveBinary(filename1);
             V2DataArray arr2 = new V2DataArray("ID01", date1);
-            arr2.LoadBinary(@"C:\ctest\arr1.dat");
+            arr2.LoadBinary(filename1);
 
             Console.WriteLine(arr1.ToLongString("F2"));
             Console.WriteLine(arr2.ToLongString("F2"));
 
 
             V2DataList lst1 = (V2DataList)arr1;
-            lst1.SaveAsText(@"C:\ctest\lst1.txt");
+            lst1.SaveAsText(filename2);
             V2DataList lst2 = new V2DataList("ID01", date1);
-            lst2.LoadAsText(@"C:\ctest\lst1.txt");
+            lst2.LoadAsText(filename2);
 
             Console.WriteLine(lst1.ToLongString("F2"));
             Console.WriteLine(lst1.ToLongString("F2"));
@@ -649,7 +660,7 @@ namespace CSprac1
             V2DataList lst5 = (V2DataList)arr5;
             col.Add(lst5);
 
-            Console.WriteLine(col.ToLongString("F2"));
+            Console.WriteLine(col.ToLongString("F2"));  
 
             float a1 = col.MaxDistance;
             IEnumerable<Vector2> a2 = col.uniq;
@@ -669,7 +680,9 @@ namespace CSprac1
         }
         static void Main(string[] args)
         {
-            test1();
+            string filename1 = @"C:\ctest\lst1.dat";
+            string filename2 = @"C:\ctest\lst1.txt";
+            test1(filename1,filename2);
             Console.WriteLine("____________________________________________________");
             test2();
         }
